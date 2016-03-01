@@ -75,12 +75,6 @@ plot(newdata$date, newdata$x, type = "l")
 #######end
 
 
-#######to remove latter
-source("/Users/naru/Documents/R_workshop/personalFinanceSaving/forecast.R")  ## see code file
-result.arima <- forecastArima(newdata, n.ahead = 30)
-
-######end
-
 ########Normalized Data BAlance columun
 normdata<-newdata
 x <-as.numeric(newdata$x)
@@ -248,6 +242,8 @@ nns <- lapply(1:length(offsettedsubdfs), function(i)
 
 number.of.predict <- 30
 
+
+
 #long term prediction
 
 long.predictions <- lapply(1:length(offsettedsubdfs), function(i)
@@ -275,13 +271,21 @@ long.predictions <- lapply(1:length(offsettedsubdfs), function(i)
   plot(c(nns[[i]]$fitted.values,prediction), type="l",col="red")
   
   lines(subsignals[[i]][(twindow+1):length(subsignals[[i]])])
-  print(lines(subsignals[[i]][(twindow+1):length(subsignals[[i]])]))
   
   prediction
-  print(prediction)
-  
+
 })
-#multilayer precptron implementation 
+
+long.predictions
+
+
+normPridiction<- rowSums(data.frame(long.predictions))
+
+
+finalpridiction <-  (normPridiction *(max(x)-min(x)) ) +min(x)
+
+
+#########end 
 
 
 
@@ -336,3 +340,13 @@ monthdata$pridiction <- monthdata$changeAverage + monthdata$average
 
 plot(monthdata)
 #######end  
+
+
+######final results 
+finalaveragedata<- monthdata[complete.cases(monthdata),]
+
+balancePridiction <- data.frame(averageMethod=finalaveragedata$pridiction,mlpPridiction = finalpridiction )
+
+
+balancePridiction$average <- rowMeans(balancePridiction)
+
